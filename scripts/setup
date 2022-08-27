@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+git checkout "$1"
+"./scripts/$1"
