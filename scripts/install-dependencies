@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+dependencies=$(jq -r ".dependencies | keys[]" "$1")
+pnpm add $dependencies
+dev_dependencies=$(jq -r ".devDependencies | keys[]" "$1")
+pnpm add -D $dev_dependencies
