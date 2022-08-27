@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+contents="$(jq . "$1")"
+echo "$contents" > "$1"
