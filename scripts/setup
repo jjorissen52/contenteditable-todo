@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-set -eo pipefail
-git checkout "$1"
-"./scripts/setup-$1"
-./scripts/install-dependencies package.json
