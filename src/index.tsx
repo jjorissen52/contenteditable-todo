@@ -1,31 +1,33 @@
+import { CssBaseline } from '@mui/material';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import logo from './logo.svg';
+import Layout from './components/Layout';
+import TodoList from './components/TodoList';
+import { css, globalStyles } from './stitches';
+
+const appStyles = css({
+  '.content': {
+    padding: '$4',
+  },
+})();
 
 function App() {
+  globalStyles();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer">
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout>
+      <div className={appStyles}>
+        <article className="content">
+          <TodoList />
+        </article>
+      </div>
+    </Layout>
   );
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
+    <CssBaseline />
     <App />
   </React.StrictMode>
 );
