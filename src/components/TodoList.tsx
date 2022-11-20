@@ -1,31 +1,25 @@
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { StitchesProps } from '../@types/react';
+import { deleteTask, getTasks, setTask, TodoType } from '../api';
 import usePartialState from '../hooks/usePartialState';
 import { styled } from '../stitches';
-import { Todo, TodoFrame, TodoType } from './Todo';
-
-const shortDescription = 'cool';
-const longDescription =
-  'this is a long description which is intended to demonstrate what happens if the description causes the todo to be larger than the default size';
-const description = () => (Math.random() > 0.5 ? longDescription : shortDescription);
+import { Todo, TodoFrame } from './Todo';
 
 export type TodoListProps = StitchesProps<false>;
 export function TodoList({ className, ...props }: TodoListProps): ReactElement {
-  const [{ todos }, , reduceState] = usePartialState({
-    todos: Array(3)
-      .fill(description())
-      .map(description => ({
-        id: uuidv4(),
-        title: 'ok',
-        description,
-        editing: false,
-      })) as TodoType[],
+  const [{ todos, ts }, updateState] = usePartialState({
+    todos: [] as TodoType[],
+    ts: new Date(),
   });
-  // @ts-ignore
-  window.todos = todos;
+  const render = () => updateState({ ts: new Date() });
+
+  useEffect(() => {
+    getTasks().then(tasks => updateState({ todos: tasks }));
+  }, [ts]);
+
   return (
     <Section className={className} {...props}>
       <div className="heading">
@@ -35,51 +29,48 @@ export function TodoList({ className, ...props }: TodoListProps): ReactElement {
             color="primary"
             size="large"
             className="add"
-            onClick={() =>
-              reduceState(({ todos }) => {
-                todos.push({
-                  id: uuidv4(),
-                  title: 'ok',
-                  description: description(),
-                  editing: true,
-                });
-                return { todos };
-              })
-            }>
+            onClick={() => {
+              setTask(uuidv4(), {
+                title: 'New Todo',
+                description: 'No Description Yet',
+                editing: true,
+              });
+              render();
+            }}>
             <AddIcon />
           </IconButton>
         </div>
       </div>
       <TodoFrame className="frame">
-        {todos.map((todo, idx) => (
+        {todos.map(todo => (
           <Todo
             key={todo.id}
             {...todo}
-            onEdit={() =>
-              reduceState(({ todos }) => {
-                todos[idx].editing = true;
-                return { todos };
-              })
-            }
-            onSave={todo =>
-              reduceState(({ todos }) => {
-                console.debug({ todo });
-                todos.splice(idx, 1, { ...todo, editing: false });
-                return { todos };
-              })
-            }
-            onDelete={() =>
-              reduceState(({ todos }) => {
-                todos.splice(idx, 1);
-                return { todos };
-              })
-            }
-            onDone={() =>
-              reduceState(({ todos }) => {
-                todos.splice(idx, 1, { ...todo, done: true });
-                return { todos };
-              })
-            }
+            onEdit={todo => {
+              setTask(todo.id, {
+                ...todo,
+                editing: true,
+              });
+              render();
+            }}
+            onSave={todo => {
+              setTask(todo.id, {
+                ...todo,
+                editing: false,
+              });
+              render();
+            }}
+            onDelete={() => {
+              deleteTask(todo.id);
+              render();
+            }}
+            onDone={todo => {
+              setTask(todo.id, {
+                ...todo,
+                done: true,
+              });
+              render();
+            }}
           />
         ))}
       </TodoFrame>

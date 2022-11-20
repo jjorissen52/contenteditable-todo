@@ -6,17 +6,11 @@ import { IconButton } from '@mui/material';
 import clsx from 'clsx';
 import { ReactElement, useRef } from 'react';
 import { StitchesProps } from '../@types/react';
+import { TodoType } from '../api';
 import usePartialState from '../hooks/usePartialState';
 import { styled } from '../stitches';
 import Card from './Card';
 
-export type TodoType = {
-  id: string;
-  title: string;
-  description?: string;
-  done?: boolean;
-  editing?: boolean;
-};
 export type TodoProps = StitchesProps &
   TodoType & {
     onEdit?: (todo: TodoType) => void;
